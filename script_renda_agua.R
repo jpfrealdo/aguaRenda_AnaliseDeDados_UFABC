@@ -1,8 +1,59 @@
+
 library(tidyverse)
+library("readxl")
+library(corrplot)
+library(GGally)
+library(sf)
 
-dados_agua <- municipioConsumoAgua
+#input dos dados
 
-dados_indicador <- dados_agua %>% 
-    mutate(consumoMedioPerCapita = ((AG010 - AG019)/populacao)*(1000000/365))
+#dados_agua <- read_excel("municipioConsumoAgua.xlsx")
+#dados_agua
+
+#dados_indicador <- dados_agua %>% 
+#  mutate(consumoMedioPerCapita = ((AG010 - AG019)/populacao)*(1000000/365))
+#dados_indicador
+
+dados_renda_consumo<-read_excel("rendaEconsumo.xlsx")
+
+dados_renda_consumo #consumo de agua e renda tem que estar no mesmo dataframe para fazer garfico de dispersão
 
 
+#grafico de dispersao Renda por Consumo de agua
+dados_renda_consumo |>
+  ggplot(aes(x = RendaPerCapita, y = consumoMedioPerCapita)) +
+  geom_point(alpha = 0.2) +
+  labs(
+    tite = "Relação entre Renda per Capita e Consumo de Água per Capita",
+    subtitle = "Dados de 2022 para Municípios Brasileiros",
+    caption = "Fonte: SNIS e IBGE",
+    x = "Renda per capita (R$)",
+    y = "Consumo de água per capita (m³/ano)"
+  ) +
+  theme_minimal()
+
+dados_renda_consumo <- dados_renda_consumo %>% 
+  mutate(
+    CODIBGE = as.character(CODIBGE), 
+    consumoMedioPerCapita = as.numeric(consumoMedioPerCapita)
+  )
+
+br_municipios<-read_sf("dadosMapas/BR_Municipios_2024/BR_Municipios_2024.shp")
+glimpse(br_municipios)
+
+
+dados_unidos <- full_join(
+  # tabela da esquerda
+   br_municipios,
+  # tabela da direita
+  dados_renda_consumo, 
+  # o argumento `by` especifica as colunas que serão utilizadas como chave para o join
+  by = c("CD_MUN" = "CODIBGE")
+)
+
+dados_unidos |> 
+  filter(SIGLA_UF== "MS")|>
+  ggplot()+
+  geom_sf(
+    aes(fill=consumoMedioPerCapita)
+  )
