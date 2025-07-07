@@ -30,7 +30,9 @@ dados_renda_consumo |>
     x = "Renda per capita (R$)",
     y = "Consumo de água per capita (m³/ano)"
   ) +
-  theme_minimal()
+  theme_minimal()+
+  scale_x_continuous(limits = c(0, 8000)) +
+  scale_y_continuous(limits = c(0, 700))
 
 dados_renda_consumo <- dados_renda_consumo %>% 
   mutate(
@@ -56,5 +58,13 @@ dados_unidos |>
   ggplot()+
   geom_sf(
     aes(fill=consumoMedioPerCapita)
-  )
-balajoshdh
+  )+
+  scale_fill_gradient(low = "white",high = "#0c4885", name="Consumo de Agua")
+
+dados_unidos |> 
+  filter(SIGLA_UF== "MS")|>
+  ggplot()+
+  geom_sf(
+    aes(fill=RendaPerCapita)
+    )+
+  scale_fill_gradient(low = "#8bc18e",high = "#047d0c", name="Renda")
