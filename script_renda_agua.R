@@ -1,3 +1,10 @@
+install.packages(c(
+  "tidyverse",
+  "readxl",
+  "sf",
+  "corrplot",
+  "GGally"
+))
 
 library(tidyverse)
 library("readxl")
@@ -17,6 +24,11 @@ library(sf)
 dados_renda_consumo<-read_excel("rendaEconsumo.xlsx")
 
 dados_renda_consumo #consumo de agua e renda tem que estar no mesmo dataframe para fazer garfico de dispersão
+
+dados_renda_consumo <- dados_renda_consumo %>%
+  mutate(consumoMedioPerCapita = as.numeric(consumoMedioPerCapita))
+dados_renda_consumo <- dados_renda_consumo %>%
+  mutate(consumoMedioPerCapita = as.numeric(str_replace(consumoMedioPerCapita, ",", ".")))
 
 
 #grafico de dispersao Renda por Consumo de agua
@@ -68,3 +80,17 @@ dados_unidos |>
     aes(fill=RendaPerCapita)
     )+
   scale_fill_gradient(low = "#8bc18e",high = "#047d0c", name="Renda")
+
+
+# calcuo de correlacao
+
+
+# Calcular a correlação entre renda e consumo de água
+correlacao <- cor(
+  x = dados_renda_consumo$RendaPerCapita,
+  y = dados_renda_consumo$consumoMedioPerCapita,
+  method = "pearson",
+  use = "complete.obs"
+)
+
+correlacao
