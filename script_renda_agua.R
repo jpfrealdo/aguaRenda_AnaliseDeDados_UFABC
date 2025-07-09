@@ -94,3 +94,13 @@ correlacao <- cor(
 )
 
 correlacao
+
+#teste de significancia
+resultado_cor_test <- cor.test(
+  x = dados_renda_consumo$RendaPerCapita,         # variável explicativa
+  y = dados_renda_consumo$consumoMedioPerCapita,          # variável resposta
+  method = "pearson",          # correlação linear de Pearson
+  alternative = "two.sided",   # hipótese bilateral (H0: r = 0)
+  conf.level = 0.95            # intervalo de confiança de 95%
+)
+resultado_cor_test
